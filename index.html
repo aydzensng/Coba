@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Wedding of Aiden &amp; Lucien</title>
+<meta name="description" content="Undangan Pernikahan Aiden Helior &amp; Lucien Helior">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#fdfbf6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Italiana&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    color-scheme: light only;
+    --ink:#4a4458;
+    --ink-soft:#726b80;
+    --sky-deep:#5b5a86;
+    --sky:#7ba3c9;
+    --sky-pale:#eaf2fa;
+    --cream:#fdfbf6;
+    --accent:#6c7ab0;      /* aksen biru-lavender, senada video */
+    --accent-soft:#b9c3e6;
+    --rose:#c98fa0;        /* aksen kecil untuk heart/love di kalender */
+    --lilac:#a99cc7;       /* aksen lilac dari kemeja & video pembuka */
+    --lilac-soft:#ded4ea;
+    --line:#c9d7e4;
+    --deep-1:#3a3350;      /* section gelap - ungu-navy pudar, bukan navy polos */
+    --deep-2:#241f38;
+    --on-deep:#f4eff9;     /* teks di atas section gelap */
+    --on-deep-soft:#d9cfe6;
+    --on-deep-accent:#c9b8e0;
+    --shadow: 0 10px 30px rgba(39,63,92,0.15);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    width:100%; overflow-x:hidden;
+    background:#241f38;
+    font-family:'Cormorant Garamond', serif;
+    color:var(--ink);
+  }
+  body{ overflow:hidden; }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    position:relative;
+    background:var(--cream);
+    min-height:100vh;
+    box-shadow:0 0 60px rgba(0,0,0,0.4);
+  }
+
+  /* ---------- COVER ---------- */
+  #cover{
+    position:fixed;
+    inset:0;
+    max-width:480px;
+    margin:0 auto;
+    z-index:50;
+    overflow:hidden;
+    background:#241f38;
+    transition:opacity 1s ease, visibility 1s ease;
+  }
+  #cover.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  #cover video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .cover-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(46,40,68,0.15) 0%, rgba(58,51,80,0.05) 35%, rgba(42,36,62,0.55) 78%, rgba(24,20,36,0.88) 100%);
+  }
+  .cover-content{
+    position:absolute; left:0; right:0; bottom:0;
+    padding:0 32px 46px;
+    text-align:center;
+    color:#f6f8fb;
+  }
+  .cover-eyebrow{
+    font-family:'Italiana', serif;
+    letter-spacing:3px;
+    font-size:13px;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:10px;
+  }
+  .cover-to{
+    font-family:'Cormorant Garamond', serif;
+    font-size:16px;
+    opacity:0.9;
+    margin-bottom:2px;
+  }
+  .cover-guest{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:23px;
+    margin-bottom:26px;
+    min-height:30px;
+  }
+  .open-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.55);
+    backdrop-filter:blur(6px);
+    color:#fff;
+    font-family:'Playfair Display', serif;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    padding:14px 26px;
+    border-radius:40px;
+    cursor:pointer;
+    transition:transform .25s ease, background .25s ease;
+  }
+  .open-btn:active{ transform:scale(0.96); }
+  .open-btn svg{ width:16px; height:16px; animation:pulseIcon 1.6s ease-in-out infinite; }
+  @keyframes pulseIcon{
+    0%,100%{ transform:translateY(0); opacity:1; }
+    50%{ transform:translateY(-3px); opacity:0.6; }
+  }
+  .cover-hint{
+    margin-top:14px;
+    font-size:12px;
+    letter-spacing:1px;
+    opacity:0.6;
+  }
+
+  /* ---------- MAIN ---------- */
+  #main{
+    opacity:0;
+    transition:opacity 1s ease;
+  }
+  #main.show{ opacity:1; }
+
+  section{
+    position:relative;
+    padding:70px 30px;
+    text-align:center;
+    overflow:hidden;
+  }
+  .bg-floral{
+    background-image:
+      linear-gradient(180deg, rgba(253,251,246,0.72) 0%, rgba(253,251,246,0.88) 60%, rgba(253,251,246,0.97) 100%),
+      url('assets/bg-floral.jpg');
+    background-size:cover;
+    background-position:center;
+  }
+  .bg-deep{
+    background-color:var(--deep-2);
+    background-image:
+      linear-gradient(180deg, rgba(58,51,80,0.86), rgba(36,31,56,0.94)),
+      url('assets/bg-floral.jpg');
+    background-size:cover;
+    background-position:center top;
+    color:var(--on-deep-soft);
+  }
+
+  .eyebrow{
+    font-family:'Italiana', serif;
+    text-transform:uppercase;
+    letter-spacing:3px;
+    font-size:13px;
+    font-weight:bold;
+    color:var(--accent);
+    margin-bottom:14px;
+  }
+  .eyebrow.on-dark{ color:var(--on-deep-accent); }
+  .monogram{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:64px;
+    line-height:1;
+    color:var(--sky-deep);
+    margin:6px 0 18px;
+  }
+  h1.names{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:34px;
+    line-height:1.25;
+    color:var(--ink);
+    margin:6px 0;
+  }
+  .amp{
+    display:block;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:18px;
+    color:var(--lilac);
+    margin:6px 0;
+  }
+
+  /* ---------- INTRO VIDEO (muncul setelah Open Invitation) ---------- */
+  #intro-video{
+    padding:0;
+    height:100vh;
+    height:100dvh;
+    max-height:900px;
+  }
+  .intro-video-wrap{
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#241f38;
+  }
+  .intro-video-wrap video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .intro-video-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg,
+      rgba(60,55,90,0.28) 0%,
+      rgba(90,85,120,0.06) 32%,
+      rgba(55,50,82,0.28) 68%,
+      rgba(28,24,42,0.72) 100%);
+  }
+  .intro-video-content{
+    position:absolute; left:0; right:0; bottom:40px;
+    text-align:center;
+    color:#f7f4fb;
+    padding:0 24px;
+  }
+  .intro-eyebrow{
+    font-family:'Italiana', serif;
+    text-transform:uppercase;
+    letter-spacing:3px;
+    font-size:12px;
+    opacity:0.85;
+    margin-bottom:8px;
+  }
+  .intro-title{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:27px;
+    color:#fff;
+    margin-bottom:40px;
+    text-shadow:0 4px 18px rgba(20,20,40,0.35);
+  }
+  .scroll-cue{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    font-family:'Italiana', serif;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:11px;
+    color:var(--lilac-soft);
+  }
+  .scroll-cue .scroll-line{
+    width:1px; height:26px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.85));
+  }
+  .scroll-cue svg{
+    width:16px; height:16px;
+    color:#fff;
+    animation:scrollBounce 1.7s ease-in-out infinite;
+  }
+  @keyframes scrollBounce{
+    0%,100%{ transform:translateY(0); opacity:1; }
+    50%{ transform:translateY(7px); opacity:0.55; }
+  }
+  .hero-flower{
+    width:250px;
+    height:auto;
+    margin:10px auto 16px;
+    display:block;
+  }
+  .divider{
+    width:64px; height:1px;
+    background:var(--line);
+    margin:22px auto;
+  }
+  .divider.on-dark{ background:rgba(244,239,249,0.3); }
+  .date-line{
+    font-family:'Playfair Display', serif;
+    font-size:19px;
+    letter-spacing:1px;
+    color:var(--ink-soft);
+  }
+  .quote{
+    font-style:italic;
+    font-size:17px;
+    line-height:1.7;
+    color:var(--ink-soft);
+    max-width:340px;
+    margin:22px auto 0;
+  }
+
+  /* couple photo */
+  .photo-frame{
+    width:250px;
+    aspect-ratio:4/5;
+    margin:8px auto 22px;
+    border-radius:6px;
+    overflow:hidden;
+    border:6px solid #fff;
+    box-shadow:var(--shadow);
+    outline:1px solid var(--line);
+    outline-offset:4px;
+  }
+  .photo-frame img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .profiles{
+    display:flex;
+    justify-content:center;
+    gap:22px;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .profile{
+    width:150px;
+  }
+  .photo-frame-sm{
+    width:150px;
+    aspect-ratio:4/5;
+    margin:0 auto 12px;
+    border-radius:6px;
+    overflow:hidden;
+    border:5px solid #fff;
+    box-shadow:var(--shadow);
+    outline:1px solid var(--line);
+    outline-offset:3px;
+  }
+  .photo-frame-sm img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .profile-name{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:18px;
+    color:var(--ink);
+  }
+
+  /* two cities - love story map */
+  .citymap-wrap{
+    width:100%;
+    max-width:280px;
+    margin:34px auto 0;
+  }
+  .cm-person{
+    position:relative;
+    width:100%;
+  }
+  .cm-map{
+    display:block;
+    width:100%;
+    filter:drop-shadow(0 8px 16px rgba(39,63,92,0.28));
+    animation:mapFloat 5s ease-in-out infinite;
+  }
+  .cm-photo{
+    position:absolute;
+    width:36%;
+    aspect-ratio:3/5;
+    overflow:hidden;
+    z-index:2;
+    box-shadow:0 10px 24px rgba(20,32,48,0.35);
+    animation:photoBob 3.4s ease-in-out infinite;
+  }
+  .cm-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .cm-person-china{ margin-bottom:36%; }
+  .cm-person-china .cm-map{ margin-top:24px; }
+  .cm-person-china .cm-photo{ left:2%; bottom:-34%; }
+  .cm-person-singapura{ margin-bottom:32%; }
+  .cm-person-singapura .cm-photo{ right:2%; bottom:-34%; animation-delay:0.6s; }
+  .cm-caption{ margin-top:6px; }
+  .cm-caption.left{ text-align:left; }
+  .cm-caption.right{ text-align:right; }
+  .cm-caption .cm-country{
+    font-family:'Italiana', serif;
+    letter-spacing:1.5px;
+    font-size:11px;
+    font-weight: bold;
+    text-transform:uppercase;
+    color:var(--sky-deep);
+  }
+  .cm-caption .cm-name{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:16px;
+    color:var(--ink);
+    margin-top:4px;
+  }
+  .cm-caption .cm-info{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin-top:2px;
+  }
+  @keyframes mapFloat{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-5px); }
+  }
+  @keyframes photoBob{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(5px) rotate(-2deg); }
+  }
+
+  /* moon & star story */
+  .story-stars{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .story-star{
+    position:absolute;
+    color:var(--on-deep-accent);
+    opacity:0.55;
+    animation:starTwinkle 2.6s ease-in-out infinite;
+  }
+  .story-title{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:30px;
+    line-height:1.25;
+    color:var(--on-deep);
+    margin:6px 0;
+    position:relative;
+    z-index:1;
+  }
+  .story-title .amp-word{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:400;
+    color:var(--on-deep-accent);
+  }
+  .story-timeline{
+    margin-top:32px;
+    text-align:left;
+    position:relative;
+    z-index:1;
+  }
+  .story-item{
+    position:relative;
+    padding-left:32px;
+    margin-bottom:26px;
+  }
+  .story-item:last-child{ margin-bottom:0; }
+  .story-item::before{
+    content:'';
+    position:absolute;
+    left:9px;
+    top:22px;
+    bottom:-26px;
+    width:1px;
+    background:rgba(244,239,249,0.22);
+  }
+  .story-item:last-child::before{ display:none; }
+  .story-icon{
+    position:absolute;
+    left:0;
+    top:1px;
+    width:19px;
+    height:19px;
+    color:var(--on-deep-accent);
+  }
+  .story-item-title{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--on-deep);
+    margin-bottom:5px;
+  }
+  .story-item-text{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--on-deep-soft);
+  }
+  @keyframes starTwinkle{
+    0%,100%{ opacity:0.15; transform:scale(0.85); }
+    50%{ opacity:0.85; transform:scale(1.1); }
+  }
+
+  /* countdown */
+  .countdown{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:30px;
+  }
+  .cd-box{
+    background:rgba(244,239,249,0.08);
+    border:1px solid rgba(244,239,249,0.22);
+    border-radius:12px;
+    width:70px;
+    padding:14px 0 10px;
+  }
+  .cd-num{
+    font-family:'Playfair Display', serif;
+    font-size:28px;
+    display:block;
+  }
+  .cd-label{
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    opacity:0.75;
+    display:block;
+    margin-top:4px;
+  }
+
+  /* save the date calendar */
+  .cal-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:26px 18px 22px;
+    margin-top:24px;
+    box-shadow:var(--shadow);
+  }
+  .cal-month{
+    font-family:'Playfair Display', serif;
+    font-size:20px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--sky-deep);
+    margin-bottom:16px;
+  }
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:6px;
+  }
+  .cal-dow{
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding-bottom:6px;
+  }
+  .cal-day{
+    position:relative;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .cal-day.empty{ visibility:hidden; }
+  .cal-day.love{
+    color:#fff;
+    font-weight:700;
+    z-index:1;
+  }
+  .cal-day.love svg{
+    position:absolute;
+    inset:0;
+    width:100%; height:100%;
+    color:var(--rose);
+    z-index:-1;
+  }
+  .cal-caption{
+    margin-top:18px;
+    font-size:15px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  /* event cards */
+  .event-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:30px 26px;
+    margin-top:26px;
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  .event-title{
+    font-family:'Playfair Display', serif;
+    font-size:22px;
+    color:var(--sky-deep);
+    margin-bottom:10px;
+  }
+  .event-day{
+    font-size:18px;
+    color:var(--ink);
+    margin-bottom:2px;
+  }
+  .event-time{
+    font-size:16px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .event-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .event-row:last-of-type{ border-bottom:none; }
+  .event-row-label{
+    font-family:'Playfair Display', serif;
+    font-size:17px;
+    color:var(--sky-deep);
+  }
+  .event-row-time{
+    font-size:15px;
+    color:var(--ink-soft);
+  }
+  .event-place{
+    font-size:17px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .event-address{
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin:6px 0 18px;
+  }
+  .map-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--sky-deep);
+    color:var(--sky-deep);
+    text-decoration:none;
+    font-family:'Playfair Display', serif;
+    font-size:13px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    padding:11px 22px;
+    border-radius:30px;
+    transition:background .2s ease, color .2s ease;
+  }
+  .map-btn:active{ background:var(--sky-deep); color:#fff; }
+
+  /* gallery - marquee row (atas) + masonry statis (bawah, rasio foto asli, tidak di-crop) */
+  .gallery-bento{
+    column-count:2;
+    column-gap:8px;
+    padding:0 24px;
+    margin-top:26px;
+  }
+  .gallery-item-sm{
+    display:block;
+    break-inside:avoid;
+    -webkit-column-break-inside:avoid;
+    margin-bottom:8px;
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+  }
+  .gallery-item-sm.tile-big{
+    column-span:all;
+  }
+  .gallery-item-sm img{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .gallery-more-label{
+    text-align:center;
+    font-family:'Italiana', serif;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--accent);
+    margin:26px 0 4px;
+  }
+  .gallery-marquee-wrap{
+    overflow:hidden;
+    width:100%;
+    margin-top:26px;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  }
+  .gallery-track{
+    display:flex;
+    gap:14px;
+    width:max-content;
+    animation:gallery-marquee 26s linear infinite;
+  }
+  .gallery-track:hover{ animation-play-state:paused; }
+  @keyframes gallery-marquee{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  .gallery-item-lg{
+    flex:0 0 auto;
+    width:190px;
+    height:300px;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 14px 34px rgba(0,0,0,0.35);
+    cursor:pointer;
+  }
+  .gallery-item-lg img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  #lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(24,20,36,0.92);
+    z-index:60;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  #lightbox.open{ display:flex; }
+  #lightbox img{
+    max-width:100%;
+    max-height:85vh;
+    border-radius:8px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  }
+  #lightbox-close{
+    position:absolute;
+    top:22px; right:22px;
+    width:38px; height:38px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+
+  /* gift */
+  .gift-card{
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-top:18px;
+    text-align:left;
+  }
+  .gift-bank{
+    font-family:'Playfair Display', serif;
+    font-size:17px;
+    letter-spacing:1px;
+    margin-bottom:8px;
+  }
+  .gift-number{
+    font-size:22px;
+    letter-spacing:2px;
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .gift-name{
+    font-size:15px;
+    opacity:0.85;
+    margin-bottom:14px;
+  }
+  .copy-btn{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.5);
+    color:#fff;
+    font-size:13px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    padding:9px 18px;
+    border-radius:30px;
+    cursor:pointer;
+    font-family:'Cormorant Garamond', serif;
+  }
+  .copy-btn.copied{ background:var(--accent-soft); border-color:var(--accent-soft); color:var(--ink); }
+
+  /* RSVP */
+  .rsvp-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px 24px;
+    margin-top:24px;
+    box-shadow:var(--shadow);
+    text-align:left;
+  }
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block;
+    font-size:13px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field input[type=text],
+  .field input[type=number],
+  .field textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 13px;
+    font-family:'Cormorant Garamond', serif;
+    font-size:16px;
+    color:var(--ink);
+    background:var(--sky-pale);
+  }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .pill-group{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .pill{
+    border:1px solid var(--accent);
+    color:var(--accent);
+    border-radius:30px;
+    padding:8px 16px;
+    font-size:14px;
+    cursor:pointer;
+    background:#fff;
+    transition:background .2s ease, color .2s ease;
+  }
+  .pill input{ display:none; }
+  .pill.active{ background:var(--accent); color:#fff; }
+  .rsvp-submit{
+    width:100%;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    padding:14px;
+    font-family:'Playfair Display', serif;
+    font-size:15px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .rsvp-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    text-align:center;
+  }
+  .rsvp-success{
+    display:none;
+    background:var(--sky-pale);
+    border:1px solid var(--accent-soft);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    margin-top:24px;
+    font-style:italic;
+    color:var(--sky-deep);
+  }
+  .rsvp-success.show{ display:block; }
+  .wishes-list{
+    margin-top:22px;
+    text-align:left;
+  }
+  .wish-item{
+    border-bottom:1px solid rgba(244,239,249,0.18);
+    padding:12px 2px;
+  }
+  .wish-item:last-child{ border-bottom:none; }
+  .wishes-pagination{
+    display:flex;
+    justify-content:center;
+    gap:9px;
+    margin-top:18px;
+  }
+  .wishes-dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:rgba(244,239,249,0.28);
+    border:none;
+    padding:0;
+    cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .wishes-dot.active{
+    background:var(--on-deep-accent);
+    transform:scale(1.35);
+  }
+  .wish-name{
+    font-weight:700;
+    font-size:15px;
+    color:var(--on-deep);
+  }
+  .wish-status{
+    font-size:12px;
+    color:var(--on-deep-accent);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-left:6px;
+  }
+  .wish-msg{
+    font-size:15px;
+    color:var(--on-deep-soft);
+    margin-top:2px;
+  }
+
+  /* closing */
+  .closing-names{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:30px;
+    margin:16px 0 6px;
+  }
+  .hashtag{
+    display:inline-block;
+    margin-top:18px;
+    font-size:15px;
+    letter-spacing:1px;
+    color:var(--accent);
+  }
+  footer{
+    text-align:center;
+    padding:26px;
+    font-size:12px;
+    letter-spacing:1px;
+    color:var(--ink-soft);
+    background:var(--cream);
+  }
+
+  /* floating music toggle */
+  #music-toggle{
+    position:fixed;
+    right:calc(50% - 240px + 18px);
+    bottom:18px;
+    z-index:40;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:rgba(34,28,50,0.65);
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    backdrop-filter:blur(4px);
+    transition:opacity .5s ease;
+  }
+  @media (max-width:520px){
+    #music-toggle{ right:18px; }
+  }
+  #music-toggle.hidden{ opacity:0; pointer-events:none; }
+  #music-toggle svg{ width:18px; height:18px; }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .reveal.in{
+    opacity:1;
+    transform:translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER / OPENING ============ -->
+<div id="cover">
+  <video id="cover-video" autoplay muted loop playsinline preload="auto">
+    <source src="assets/opening.mp4" type="video/mp4">
+  </video>
+  <div class="cover-scrim"></div>
+  <div class="cover-content">
+    <div class="cover-to">To Our Beloved Guests, </div>
+    <div class="cover-guest" id="guest-name">Bapak/Ibu/Saudara/i</div>
+    <button class="open-btn" id="open-invitation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      Open Invitation
+    </button>
+    <div class="cover-hint">Tap to open</div>
+  </div>
+</div>
+
+<!-- ============ MAIN INVITATION ============ -->
+<div id="app">
+  <div id="main">
+
+    <!-- INTRO VIDEO (tampil begitu undangan dibuka) -->
+    <section id="intro-video">
+      <div class="intro-video-wrap">
+        <video id="intro-video-el" autoplay muted loop playsinline preload="auto">
+          <source src="assets/intro-story.mp4" type="video/mp4">
+        </video>
+        <div class="intro-video-scrim"></div>
+        <div class="intro-video-content">
+          <div class="intro-eyebrow">Aiden &amp; Lucien</div>
+          <div class="intro-title">The Beginning Of Forever</div>
+          <div class="scroll-cue">
+            <span>Scroll Down</span>
+            <span class="scroll-line"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HERO -->
+    <section class="bg-deep" style="padding-top:90px;">
+      <div class="eyebrow on-dark">The Wedding Of</div>
+      <div class="monogram" style="color:var(--on-deep);">A &amp; L</div>
+      <img class="hero-flower" src="assets/flower.png" alt="">
+      <div class="date-line" style="color:var(--on-deep);">10 October 2026</div>
+      <p class="quote" style="color:var(--on-deep-soft);">&ldquo;Two hearts found their way to one another, and from that moment, a beautiful story began. Today, with love in our hearts and forever in our hands, we invite you to witness the beginning of our next chapter as we choose each other, today and always.&rdquo;</p>
+    </section>
+
+    <!-- TWO CITIES / LOVE STORY -->
+    <section class="bg-floral reveal" style="padding:60px 24px;">
+      <div class="eyebrow">Our Love Story</div>
+      <h1 class="names" style="font-size:24px;">Two Cities, One Love</h1>
+      <p class="quote" style="max-width:300px;">Born beneath different skies, our paths began miles apart. Yet somehow, life brought two hearts together and turned two stories into one beautiful journey.</p>
+
+      <div class="citymap-wrap">
+        <div class="cm-person cm-person-china">
+          <img class="cm-map" src="assets/map-china-trim.png" alt="China">
+          <div class="cm-photo">
+            <img src="assets/lucien-photo2.jpg" alt="Foto Lucien Helior">
+          </div>
+        </div>
+        <div class="cm-caption left">
+          <div class="cm-country">Chinese</div>
+          <div class="cm-name">Lucien Helior</div>
+          <div class="cm-info">Born, February 27, 1999<br>China</div>
+        </div>
+
+        <div class="cm-person cm-person-singapura">
+          <img class="cm-map" src="assets/map-singapura-trim.png" alt="Singapore">
+          <div class="cm-photo">
+            <img src="assets/aiden-photo2.png" alt="Foto Aiden Helior">
+          </div>
+        </div>
+        <div class="cm-caption right">
+          <div class="cm-country">Singaporean</div>
+          <div class="cm-name">Aiden Helior</div>
+          <div class="cm-info">Born, November 17, 1993<br>Singapore</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOON & STAR STORY -->
+    <section class="bg-deep reveal">
+      <div class="story-stars" aria-hidden="true">
+        <svg class="story-star" style="top:12%; left:14%; width:10px; height:10px; animation-delay:0s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:8%; left:78%; width:7px; height:7px; animation-delay:0.6s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:22%; left:88%; width:9px; height:9px; animation-delay:1.2s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:5%; left:40%; width:6px; height:6px; animation-delay:1.8s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:30%; left:6%; width:7px; height:7px; animation-delay:0.9s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:90%; left:10%; width:8px; height:8px; animation-delay:1.5s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+        <svg class="story-star" style="top:95%; left:85%; width:9px; height:9px; animation-delay:0.3s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.4 8.6L23 11l-8.6 2.4L12 22l-2.4-8.6L1 11l8.6-2.4z"/></svg>
+      </div>
+
+      <div class="eyebrow on-dark" style="position:relative; z-index:1;">Our Story</div>
+      <h1 class="story-title">The Story of Aiden <span class="amp-word">&amp;</span> Lucien</h1>
+
+      <div class="story-timeline">
+        <div class="story-item">
+          <svg class="story-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.6L21 11l-6.4 2.4L12 20l-2.6-6.6L3 11l6.4-2.4z"/></svg>
+          <div class="story-item-title">When We First Met</div>
+          <div class="story-item-text">It all began in June 2026 with a simple, slightly awkward conversation. Little did we know, it would be the beginning of something beautiful.</div>
+        </div>
+        <div class="story-item">
+          <svg class="story-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.6L21 11l-6.4 2.4L12 20l-2.6-6.6L3 11l6.4-2.4z"/></svg>
+          <div class="story-item-title">Learning to Know Each Other</div>
+          <div class="story-item-text">Day by day, we slowly learned about each other, choosing to listen, understand, and grow together.</div>
+        </div>
+        <div class="story-item">
+          <svg class="story-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.6L21 11l-6.4 2.4L12 20l-2.6-6.6L3 11l6.4-2.4z"/></svg>
+          <div class="story-item-title">Finding Home in Each Other</div>
+          <div class="story-item-text">What started as a simple connection became a place of comfort, understanding, and love. Somehow, we found a home in each other.</div>
+        </div>
+          <div class="story-item">
+          <svg class="story-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.6L21 11l-6.4 2.4L12 20l-2.6-6.6L3 11l6.4-2.4z"/></svg>
+          <div class="story-item-title">Our Promise</div>
+          <div class="story-item-text">On October 10th, 2026, we choose to take this love a step further, promising to keep choosing each other and walk hand in hand through every chapter ahead.</div>
+        </div>
+      </div>
+
+      <div style="margin:34px -30px -70px; position:relative; z-index:1;">
+        <img src="assets/story-couple.jpg" alt="Foto Aiden & Lucien" style="width:100%; height:auto; display:block;">
+      </div>
+    </section>
+
+    <!-- COUPLE PHOTO -->
+    <section class="bg-floral reveal" style="padding-top:50px;">
+      <div class="eyebrow">MEET THE LOVERS</div>
+      <div class="photo-frame">
+        <img src="assets/couple-photo.png" alt="Foto Aiden & Lucien">
+      </div>
+      <h1 class="names" style="font-size:24px;">Aiden <span style="color:var(--accent); font-style:italic;">&amp;</span> Lucien</h1>
+      <p class="quote" style="max-width:300px;">With grateful hearts and endless love, we invite you to celebrate this beautiful chapter of our lives with us. Surrounded by the people we cherish, we are ready to begin our forever together.</p>
+
+      <div class="profiles">
+        <div class="profile">
+          <div class="photo-frame-sm">
+            <img src="assets/aiden-photo.png" alt="Foto Aiden Helior">
+          </div>
+          <div class="profile-name">Aiden Helior</div>
+        </div>
+        <div class="profile">
+          <div class="photo-frame-sm">
+            <img src="assets/lucien-photo.png" alt="Foto Lucien Helior">
+          </div>
+          <div class="profile-name">Lucien Helior</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAVE THE DATE CALENDAR + COUNTDOWN -->
+    <section class="bg-deep reveal">
+      <h1 class="names" style="color:var(--on-deep); font-size:26px;">SAVE THE DATE</h1>
+      <p class="quote" style="max-width:300px; color:var(--on-deep-soft);">Mark your calendars and save this special day in your hearts. We cannot wait to celebrate the beginning of our forever with the people we love most.</p>
+      <div class="cal-card">
+        <div class="cal-month">October 2026</div>
+        <div class="cal-grid">
+          <div class="cal-dow">Sun</div>
+          <div class="cal-dow">Mon</div>
+          <div class="cal-dow">Tue</div>
+          <div class="cal-dow">Wed</div>
+          <div class="cal-dow">Thur</div>
+          <div class="cal-dow">Fri</div>
+          <div class="cal-dow">Sat</div>
+
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day">1</div>
+          <div class="cal-day">2</div>
+          <div class="cal-day">3</div>
+
+          <div class="cal-day">4</div>
+          <div class="cal-day">5</div>
+          <div class="cal-day">6</div>
+          <div class="cal-day">7</div>
+          <div class="cal-day">8</div>
+          <div class="cal-day">9</div>
+          <div class="cal-day love">
+            <svg viewBox="0 0 32 29" fill="currentColor"><path d="M16 29C7 22.5 0 17.2 0 10.4 0 4.9 4.3 1 9.4 1c3 0 5.6 1.5 6.6 3.8C17 2.5 19.6 1 22.6 1 27.7 1 32 4.9 32 10.4 32 17.2 25 22.5 16 29z"/></svg>
+            10
+          </div>
+
+          <div class="cal-day">11</div>
+          <div class="cal-day">12</div>
+          <div class="cal-day">13</div>
+          <div class="cal-day">14</div>
+          <div class="cal-day">15</div>
+          <div class="cal-day">16</div>
+          <div class="cal-day">17</div>
+
+          <div class="cal-day">18</div>
+          <div class="cal-day">19</div>
+          <div class="cal-day">20</div>
+          <div class="cal-day">21</div>
+          <div class="cal-day">22</div>
+          <div class="cal-day">23</div>
+          <div class="cal-day">24</div>
+
+          <div class="cal-day">25</div>
+          <div class="cal-day">26</div>
+          <div class="cal-day">27</div>
+          <div class="cal-day">28</div>
+          <div class="cal-day">29</div>
+          <div class="cal-day">30</div>
+          <div class="cal-day">31</div>
+        </div>
+        <div class="cal-caption">Saturday, October 10 2026</div>
+        <a class="map-btn" style="margin-top:18px;" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Aiden%20%26%20Lucien%27s%20Wedding&dates=20261010T120000Z/20261010T160000Z&details=Join%20us%20as%20we%20celebrate%20the%20beginning%20of%20our%20forever%20together.&location=Rayavadee%20Resort%2C%20214%20Ao%20Nang%2C%20Krabi%2081000%2C%20Thailand&sf=true&output=xml" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          Add to Calendar
+        </a>
+      </div>
+
+      <div class="eyebrow on-dark" style="margin-top:34px;">COUNTING DOWN TO OUR FOREVER</div>
+      <p class="quote" style="max-width:300px; color:var(--on-deep-soft);">The wait is almost over. Until then, let every passing day bring us one step closer to a beautiful beginning.</p>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Days</span></div>
+        <div class="cd-box"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
+        <div class="cd-box"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Minutes</span></div>
+        <div class="cd-box"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Seconds</span></div>
+      </div>
+    </section>
+
+    <!-- COUPLE PHOTO 3 -->
+    <section class="bg-floral reveal" style="padding:0;">
+      <img src="assets/couple-photo3.jpg" alt="Foto Aiden & Lucien" style="width:100%; height:auto; display:block;">
+    </section>
+
+    <!-- EVENT INFO -->
+    <section class="bg-deep reveal">
+      <div class="eyebrow on-dark">Our Special Day</div>
+      <h1 class="names" style="font-size:26px; color:var(--on-deep);">Wedding Celebration</h1>
+      <p class="quote" style="max-width:300px; color:var(--on-deep-soft);">Join us as we celebrate the love that brought us together and the beginning of our forever.</p>
+      <div class="divider on-dark"></div>
+
+      <div class="event-card">
+        <div class="event-day">Saturday, October 10th, 2026</div>
+        <div class="event-time">7:00 PM &ndash; Finish</div>
+
+        <div class="event-place" style="margin-top:16px;">Rayavadee Resort</div>
+        <div class="event-address">214 Ao Nang, อำเภอ เมือง Krabi 81000, Thailand<br></div>
+        <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=Rayavadee+Resort" target="_blank" rel="noopener">View Location</a>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="bg-floral reveal" style="padding-left:0; padding-right:0;">
+      <h1 class="names" style="font-size:26px; padding:0 30px;">MOMENTS WE CHERISH</h1>
+      <p class="quote" style="max-width:300px;">Every photograph holds a little piece of our story, moments of laughter, love, and memories we will carry with us into forever.</p>
+      <div class="gallery-marquee-wrap">
+        <div class="gallery-track" id="gallery">
+          <div class="gallery-item-lg"><img src="assets/gallery-1.jpg" alt="Galeri 1"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-2.jpg" alt="Galeri 2"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-3.jpg" alt="Galeri 3"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-4.jpg" alt="Galeri 4"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-5.jpg" alt="Galeri 5"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-6.jpg" alt="Galeri 6"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-7.jpg" alt="Galeri 7"></div>
+          <div class="gallery-item-lg"><img src="assets/gallery-8.jpg" alt="Galeri 8"></div>
+          <!-- duplicate set untuk loop mulus -->
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-1.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-2.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-3.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-4.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-5.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-6.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-7.jpg" alt=""></div>
+          <div class="gallery-item-lg" aria-hidden="true"><img src="assets/gallery-8.jpg" alt=""></div>
+        </div>
+      </div>
+
+      <div class="gallery-more-label">Captured Moments</div>
+
+      <div class="gallery-bento" id="gallery-grid">
+        <div class="gallery-item-sm"><img src="assets/gallery-9.jpg" alt="Galeri 9"></div>
+        <div class="gallery-item-sm"><img src="assets/gallery-10.jpg" alt="Galeri 10"></div>
+        <div class="gallery-item-sm tile-big"><img src="assets/gallery-11.jpg" alt="Galeri 11"></div>
+        <div class="gallery-item-sm"><img src="assets/gallery-12.jpg" alt="Galeri 12"></div>
+        <div class="gallery-item-sm"><img src="assets/gallery-13.jpg" alt="Galeri 13"></div>
+        <div class="gallery-item-sm tile-big"><img src="assets/gallery-14.jpg" alt="Galeri 14"></div>
+        <div class="gallery-item-sm"><img src="assets/gallery-15.jpg" alt="Galeri 15"></div>
+        <div class="gallery-item-sm"><img src="assets/gallery-16.jpg" alt="Galeri 16"></div>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="bg-deep reveal">
+      <div class="eyebrow on-dark">YOUR PRESENCE</div>
+      <div class="date-line" style="color:var(--on-deep);">RSVP</div>
+      <p class="quote" style="color:var(--on-deep-soft);">We would be delighted to celebrate this special day with you. Please let us know if you will be joining us as we begin this beautiful chapter together.</p>
+
+      <form class="rsvp-card" id="rsvp-form">
+        <div class="field">
+          <label for="rsvp-name">Name</label>
+          <input type="text" id="rsvp-name" placeholder="Full Name" required>
+        </div>
+        <div class="field">
+          <label>Attendance</label>
+          <div class="pill-group" id="rsvp-attendance">
+            <label class="pill active"><input type="radio" name="attendance" value="Attending" checked>Attending</label>
+            <label class="pill"><input type="radio" name="attendance" value="Not Attending">Not Attending</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rsvp-guests">Number Of Guests</label>
+          <input type="number" id="rsvp-guests" min="1" max="100" value="1">
+        </div>
+        <div class="field">
+          <label for="rsvp-message">Message &amp; Wishes</label>
+          <textarea id="rsvp-message" placeholder="Write your wishes and a little message for Aiden & Lucien..."></textarea>
+        </div>
+        <button type="submit" class="rsvp-submit">Submit RSVP</button>
+      </form>
+
+      <div class="rsvp-success" id="rsvp-success">Thank you! Your RSVP has been received ♡</div>
+
+      <div class="wishes-list" id="wishes-list"></div>
+      <div class="wishes-pagination" id="wishes-pagination"></div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="bg-floral reveal" style="padding-bottom:56px;">
+      <div class="eyebrow">WITH GRATITUDE</div>
+      <p class="quote" style="margin-top:0;">It would be a true joy and honor to have you with us on this special day. Thank you for sharing in our happiness, for your love and prayers, and for being part of the beautiful journey that brought us here.</p>
+      <div class="closing-names">Aiden &amp; Lucien</div>
+      <div class="photo-frame" style="width:280px; margin-top:0px; margin-bottom:0px; border:none; box-shadow:none; outline:none;">
+        <img src="assets/couple-photo2.png" alt="Foto Aiden & Lucien">
+      </div>
+      <div class="hashtag">#AicenTieTheKnot</div>
+    </section>
+
+    <footer>A & L &ndash; Always, With Love 2026</footer>
+  </div>
+</div>
+
+<!-- Lightbox for gallery -->
+<div id="lightbox">
+  <div id="lightbox-close">&times;</div>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<button id="music-toggle" class="hidden" aria-label="Toggle music">
+  <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+  <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+</button>
+<audio id="bg-music" src="assets/wedding-song.mp3" loop preload="none"></audio>
+
+<script>
+  var supabaseClient = null;
+  try {
+    supabaseClient = window.supabase.createClient(
+      'https://wghhxbstiknjbuuegdeb.supabase.co',   // Project URL (tanpa /rest/v1/ di belakang)
+      'sb_publishable_Eg_Gu7HHPXt_5gRHc7WYdQ_ZQHmwbwO'            // pakai key yang "Publishable" / "anon public", BUKAN yang "secret"
+    );
+  } catch (err) {
+    console.error('Supabase gagal terhubung:', err);
+  }
+  // ---- Guest name personalization (?to=Nama) ----
+  const params = new URLSearchParams(window.location.search);
+  const guest = params.get('to');
+  if (guest) {
+    document.getElementById('guest-name').textContent = decodeURIComponent(guest.replace(/\+/g,' '));
+  }
+
+  // ---- Open invitation ----
+  const cover = document.getElementById('cover');
+  const main = document.getElementById('main');
+  const coverVideo = document.getElementById('cover-video');
+  const introVideo = document.getElementById('intro-video-el');
+  const musicToggle = document.getElementById('music-toggle');
+  const bgMusic = document.getElementById('bg-music');
+  let musicPlaying = false;
+
+  document.getElementById('open-invitation').addEventListener('click', function () {
+    cover.classList.add('hide');
+    main.classList.add('show');
+    musicToggle.classList.remove('hidden');
+    document.body.style.overflow = 'auto';
+
+    // pastikan video intro langsung main begitu undangan dibuka
+    if (introVideo) { introVideo.play().catch(() => {}); }
+
+    // try to start background music (ignored gracefully if file not present)
+    bgMusic.volume = 0.4;
+    bgMusic.play().then(() => {
+      musicPlaying = true;
+      updateMusicIcon();
+    }).catch(() => { musicPlaying = false; updateMusicIcon(); });
+
+    setTimeout(() => {
+      coverVideo.pause();
+      cover.style.display = 'none';
+    }, 1000);
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+
+  function updateMusicIcon(){
+    document.getElementById('icon-pause').style.display = musicPlaying ? 'block' : 'none';
+    document.getElementById('icon-play').style.display = musicPlaying ? 'none' : 'block';
+  }
+
+  musicToggle.addEventListener('click', function () {
+    if (musicPlaying) {
+      bgMusic.pause();
+      musicPlaying = false;
+      updateMusicIcon();
+    } else {
+      bgMusic.play().then(() => {
+        musicPlaying = true;
+        updateMusicIcon();
+      }).catch(() => {
+        musicPlaying = false;
+        updateMusicIcon();
+      });
+    }
+  });
+
+  // ---- Countdown ----
+  const weddingDate = new Date('2026-10-10T19:00:00+07:00').getTime();
+  function tickCountdown(){
+    const now = Date.now();
+    let diff = weddingDate - now;
+    if (diff < 0) diff = 0;
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  // ---- Copy account number ----
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const text = this.getAttribute('data-copy');
+      navigator.clipboard.writeText(text).then(() => {
+        const original = this.textContent;
+        this.textContent = 'Tersalin!';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = original;
+          this.classList.remove('copied');
+        }, 1800);
+      });
+    });
+  });
+
+  // ---- Scroll reveal ----
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // ---- RSVP pill selection ----
+  document.querySelectorAll('#rsvp-attendance .pill').forEach(pill => {
+    pill.addEventListener('click', function () {
+      document.querySelectorAll('#rsvp-attendance .pill').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ---- Gallery lightbox ----
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('.gallery-item-lg img, .gallery-item-sm img').forEach(img => {
+    img.addEventListener('click', () => {
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightbox.classList.add('open');
+    });
+  });
+  document.getElementById('lightbox-close').addEventListener('click', () => lightbox.classList.remove('open'));
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+
+  /* ============================================================
+     RSVP SUBMIT
+     Sudah tersambung ke Supabase (lihat variabel `supabaseClient`
+     di atas). PENTING: variabel client-nya sengaja dinamai
+     `supabaseClient`, BUKAN `supabase` — karena `window.supabase`
+     itu sudah dipakai oleh library-nya sendiri (dari CDN unpkg).
+     Kalau nama variabelnya dibikin sama persis "supabase", itu
+     akan menimpa/merusak object library-nya dan bikin RSVP gagal
+     terhubung (pernah kejadian, makanya dicatat di sini).
+     ============================================================ */
+
+  const wishesList = document.getElementById('wishes-list');
+  const wishesPagination = document.getElementById('wishes-pagination');
+  const rsvpSuccess = document.getElementById('rsvp-success');
+
+  // ---- Wishes pagination (maks 5 ucapan per halaman, navigasi titik bulat) ----
+  const WISHES_PER_PAGE = 5;
+  let allWishes = [];
+  let currentWishPage = 0;
+
+  function setWishes(list){
+    allWishes = list.slice();
+    currentWishPage = 0;
+    renderWishesPage();
+  }
+
+  function addWish(payload){
+    allWishes.unshift(payload);
+    currentWishPage = 0;
+    renderWishesPage();
+  }
+
+  function renderWishesPage(){
+    wishesList.innerHTML = '';
+    const totalPages = Math.max(1, Math.ceil(allWishes.length / WISHES_PER_PAGE));
+    if (currentWishPage >= totalPages) currentWishPage = totalPages - 1;
+    const start = currentWishPage * WISHES_PER_PAGE;
+    allWishes.slice(start, start + WISHES_PER_PAGE).forEach(payload => {
+      const item = document.createElement('div');
+      item.className = 'wish-item';
+      item.innerHTML =
+        '<span class="wish-name">' + escapeHtml(payload.name) + '</span>' +
+        '<span class="wish-status">' + escapeHtml(payload.attendance) + '</span>' +
+        (payload.message ? '<div class="wish-msg">' + escapeHtml(payload.message) + '</div>' : '');
+      wishesList.appendChild(item);
+    });
+    renderWishesPagination(totalPages);
+  }
+
+  function renderWishesPagination(totalPages){
+    wishesPagination.innerHTML = '';
+    if (totalPages <= 1) return;
+    for (let i = 0; i < totalPages; i++){
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'wishes-dot' + (i === currentWishPage ? ' active' : '');
+      dot.setAttribute('aria-label', 'Halaman ' + (i + 1));
+      dot.addEventListener('click', () => {
+        currentWishPage = i;
+        renderWishesPage();
+      });
+      wishesPagination.appendChild(dot);
+    }
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('rsvp-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('rsvp-name').value.trim(),
+      attendance: document.querySelector('#rsvp-attendance input:checked').value,
+      guests: document.getElementById('rsvp-guests').value,
+      message: document.getElementById('rsvp-message').value.trim()
+    };
+    if (!payload.name) return;
+
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('rsvp').insert([payload]);
+      if (error) {
+        alert('Gagal mengirim RSVP, coba lagi ya.');
+        console.error(error);
+        return;
+      }
+    }
+
+    addWish(payload);
+    rsvpSuccess.classList.add('show');
+    this.reset();
+    document.querySelectorAll('#rsvp-attendance .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('#rsvp-attendance .pill').classList.add('active');
+    setTimeout(() => rsvpSuccess.classList.remove('show'), 4000);
+  });
+
+  // muat ucapan yang sudah ada tiap kali halaman dibuka
+  (async function loadWishes(){
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('rsvp')
+      .select('*').order('created_at', { ascending:false });
+    if (!error && data) setWishes(data);
+  })();
+</script>
+</body>
+</html>
